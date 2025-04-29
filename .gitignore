@@ -10,3 +10,7 @@ __pycache__/
 # 忽略所有的 .pyc, .pyo, .pyd 文件
 *.py[cod]
 *$py.class
+
+# 忽略sepsis的data和models（太大了）
+sepsis/data
+sepsis/models
