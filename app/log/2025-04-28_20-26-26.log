@@ -1,0 +1,6 @@
+2025-04-28 20:26:26,243 - app.logger - INFO - Application started, logs saved to: /home/jeffliu/projects_ubuntu/CS149_Project2_Final/app/log/2025-04-28_20-26-26.log
+2025-04-28 20:26:26,998 - root - INFO - Anonymized telemetry enabled. See https://docs.browser-use.com/development/telemetry for more information.
+2025-04-28 20:26:27,578 - httpx - INFO - HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-04-28 20:26:27,589 - httpx - INFO - HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-04-28 20:26:27,835 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-04-28 20:26:59,241 - httpx - INFO - HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"

@@ -1,3 +1,16 @@
+# conda create -n ml_final_sepsis python=3.11 -y
+
+# Sepsis
+pandas
+numpy
+scikit-learn
+joblib
+shap
+matplotlib
+pymupdf
+langdetect
+
+
 # Front & Backend
 gradio
 openai

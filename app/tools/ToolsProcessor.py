@@ -43,12 +43,16 @@ class ToolsProcessor:
         """Extract TOOLS instruction content from a message"""
         # Use regex to match TOOLS instruction format
         import re
-        pattern = r'\[\[TOOLS:(TRUE|FALSE)\]\[(.*?)\]\]'
+        # pattern = r'\[\[TOOLS:(TRUE|FALSE)\]\[(.*?)\]\]'
+        pattern = r'\[\[TOOLS:(TRUE|FALSE|SEPSIS)\]\[(.*?)\]\]'
         match = re.search(pattern, message, re.DOTALL)
         
         if match:
-            tools_status = match.group(1) == "TRUE"  # Extract TOOLS status
-            tools_content = match.group(2)  # Extract TOOLS content
+            raw_tool     = match.group(1)              # "TRUE"、"FALSE" 或 "SEPSIS"
+            tools_status  = (raw_tool == "TRUE")
+            # 对 SEPSIS 指令，我们把 tools_content 也设置成 "SEPSIS"
+            tools_content = raw_tool if raw_tool == "SEPSIS" else match.group(2)
+
             
             # Debug output to verify content extraction
             logger.info(f"Extracted tool status: {tools_status}")
@@ -81,6 +85,74 @@ class ToolsProcessor:
             str: Tool execution result
         """
         logger.info(f"Starting tool request processing: {content}")
+
+        # —— 新增：如果是 SEPSIS 指令，直接运行本地管道脚本 —— 
+        if content == "SEPSIS":
+            import subprocess
+            from pathlib import Path
+            import sys
+            import time
+            
+            root = Path(__file__).resolve().parent.parent.parent
+            cmds = [
+                "python -m sepsis.1_load",
+                "python -m sepsis.2_impute",
+                "python -m sepsis.3_feature",
+                "python -m sepsis.4_train",
+                "python -m sepsis.5_evaluate",
+                "python -m sepsis.6_explain",
+                "python -m sepsis.7_predict",
+            ]
+            logs = []
+            
+            # 添加进度显示
+            total_steps = len(cmds)
+            
+            for i, c in enumerate(cmds, 1):
+                step_name = c.split(".")[-1]
+                progress_msg = f"[{i}/{total_steps}] 运行: {c} ({step_name})..."
+                
+                # 在控制台显示进度
+                print(progress_msg, file=sys.stderr)
+                sys.stderr.flush()
+                
+                # 记录开始时间
+                start_time = time.time()
+                
+                # 运行命令并捕获输出
+                proc = subprocess.run(c.split(), cwd=str(root), capture_output=True, text=True)
+                
+                # 计算运行时间
+                elapsed_time = time.time() - start_time
+                
+                # 显示命令执行结果状态
+                status = "成功" if proc.returncode == 0 else "失败"
+                status_msg = f"[{i}/{total_steps}] {step_name} {status} (耗时: {elapsed_time:.2f}秒)"
+                print(status_msg, file=sys.stderr)
+                sys.stderr.flush()
+                
+                # 实时显示输出
+                if proc.stdout:
+                    print(f"--- 标准输出 ---\n{proc.stdout}", file=sys.stderr)
+                    sys.stderr.flush()
+                if proc.stderr:
+                    print(f"--- 错误输出 ---\n{proc.stderr}", file=sys.stderr)
+                    sys.stderr.flush()
+                
+                # 添加到日志
+                logs.append(f"$ {c}\n状态: {status} (耗时: {elapsed_time:.2f}秒)\n--- 输出 ---\n{proc.stdout}{proc.stderr}")
+                
+                # 如果命令执行失败，中止流程
+                if proc.returncode != 0:
+                    print(f"命令执行失败，停止流程: {c}", file=sys.stderr)
+                    sys.stderr.flush()
+                    break
+            
+            print("所有流程执行完毕", file=sys.stderr)
+            sys.stderr.flush()
+            
+            return "\n\n".join(logs)
+            # —— 新增部分结束 ——
                 
         try:
             # Dynamically import Manus
@@ -199,34 +271,34 @@ class ToolsProcessor:
                 if result_container:
                     progress_summary = "\n".join(progress_updates) if progress_updates else "No detailed progress available"
                     return f"""
-Tool execution completed.
+                            Tool execution completed.
 
-Progress Log:
-{progress_summary}
+                            Progress Log:
+                            {progress_summary}
 
-Result:
-{result_container[0]}
-"""
+                            Result:
+                            {result_container[0]}
+                            """
                 else:
                     return "Tool execution completed, but no result returned"
             except concurrent.futures.TimeoutError:
                 logger.error("Tool execution timeout")
                 progress_summary = "\n".join(progress_updates) if progress_updates else "No progress information available"
                 return f"""
-Tool execution timeout, forcibly terminated after 300 seconds.
+                        Tool execution timeout, forcibly terminated after 300 seconds.
 
-Last recorded progress:
-{progress_summary}
-"""
+                        Last recorded progress:
+                        {progress_summary}
+                        """
             except Exception as e:
                 logger.error(f"Error waiting for tool execution result: {e}")
                 progress_summary = "\n".join(progress_updates) if progress_updates else "No progress information available"
                 return f"""
-Error during tool processing: {str(e)}
+                        Error during tool processing: {str(e)}
 
-Progress before error:
-{progress_summary}
-"""
+                        Progress before error:
+                        {progress_summary}
+                        """
     
     @staticmethod
     def process_message(message):
@@ -246,13 +318,41 @@ Progress before error:
         cleaned_message, tools_status, tools_content = ToolsProcessor.extract_tools_content(message)
         
         # Determine subsequent processing based on TOOLS status
-        if tools_status:
-            # If TOOLS status is TRUE, process tool request and add result to message
-            tools_result = ToolsProcessor.process_tools_request(tools_content)
-            # Build final response, adding tool execution result after cleaned message
-            final_message = f"{cleaned_message}\n\n[Tool Execution Result]: {tools_result}"
-            return final_message
-        else:
-            # If TOOLS status is FALSE, just return cleaned message
-            return cleaned_message
+        # if tools_status:
+        #     # If TOOLS status is TRUE, process tool request and add result to message
+        #     tools_result = ToolsProcessor.process_tools_request(tools_content)
+        #     # Build final response, adding tool execution result after cleaned message
+        #     final_message = f"{cleaned_message}\n\n[Tool Execution Result]: {tools_result}"
+        #     return final_message
+        # else:
+        #     # If TOOLS status is FALSE, just return cleaned message
+        #     return cleaned_message
+        if tools_content == "SEPSIS":
+            import subprocess
+            root = Path(__file__).resolve().parent.parent.parent
+            cmds = [
+                "python -m sepsis.1_load",
+                "python -m sepsis.2_impute",
+                "python -m sepsis.3_feature",
+                "python -m sepsis.4_train",
+                "python -m sepsis.5_evaluate",
+                "python -m sepsis.6_explain",
+                "python -m sepsis.7_predict",
+            ]
+            logs = []
+            for c in cmds:
+                proc = subprocess.run(c.split(), cwd=str(root), capture_output=True, text=True)
+                logs.append(f"$ {c}\n{proc.stdout}{proc.stderr}")
+                if proc.returncode != 0:
+                    break 
+            return cleaned_message + "\n\n[Sepsis Pipeline Logs]\n" + "\n".join(logs)
         
+        if tools_status:
+            tools_result = ToolsProcessor.process_tools_request(tools_content)
+            return f"{cleaned_message}\n\n[Tool Execution Result]: {tools_result}"
+        return cleaned_message
+    
+    
+    
+
+

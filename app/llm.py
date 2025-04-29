@@ -72,6 +72,29 @@ async def chat_with_cfo(conversation, user_message: str):
         Always include [[TOOLS STATUS][PROMPT]]
         Please always mark [[TOOLS STATUS][PROMPT]] at the end of your response
         For PROMPT with specific content, please include specific tool requests and the content of the request in the PROMPT.
+        
+        【ABOUT SEPSIS TASK AND SPECIAL TOOL: SEPSIS】
+        Whenever the user’s request is to run or orchestrate any part of the sepsis EHR analysis pipeline—including but not limited to:
+
+        • Loading the training or test data  
+        • Detecting or imputing missing values  
+        • Performing feature engineering (aggregation, normalization, etc.)  
+        • Training or tuning the mortality‐prediction model  
+        • Evaluating model performance (F1, AUC, reports)  
+        • Generating model explanations (SHAP, feature importance)  
+        • Producing final predictions on the test set  
+
+        —you must *not* try to answer directly. Instead, you should end your assistant message with exactly:
+
+        `[[TOOLS:SEPSIS][]]`
+
+        and no other tool payload. This hidden instruction signals the system to invoke the full seven‐step sepsis pipeline automatically. 
+
+        Example:
+
+        User: “请帮我用 ICU 病历数据预测这些患者的 90 天死亡率。”  
+        Assistant: “好的，我将开始执行脓毒症 EHR 分析管道。[[TOOLS:SEPSIS][]]”  
+
         """
     )
 
@@ -131,11 +154,11 @@ async def chat_with_cfo(conversation, user_message: str):
     final_response = "".join(partial_response)
     
     # Check if we need to process tools
-    if "[[TOOLS:TRUE" in final_response:
+    if "[[TOOLS:TRUE" in final_response or "[[TOOLS:SEPSIS" in final_response:
         # Extract the tool instructions
         cleaned_message, tools_status, tools_content = ToolsProcessor.extract_tools_content(final_response)
         
-        if tools_status:
+        if tools_status or tools_content == "SEPSIS":
             # Show that tool processing is starting
             if updated_conv[-1]["role"] == "assistant":
                 updated_conv[-1]["content"] = f"{cleaned_message}\n\n[Tool Processing Started...]"

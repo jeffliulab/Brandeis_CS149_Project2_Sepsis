@@ -1,0 +1,12 @@
+2025-04-28 19:51:34,191 - app.logger - INFO - Application started, logs saved to: /home/jeffliu/projects_ubuntu/CS149_Project2_Final/app/log/2025-04-28_19-51-34.log
+2025-04-28 19:51:34,936 - root - INFO - Anonymized telemetry enabled. See https://docs.browser-use.com/development/telemetry for more information.
+2025-04-28 19:51:35,514 - httpx - INFO - HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-04-28 19:51:35,529 - httpx - INFO - HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-04-28 19:51:35,687 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-04-28 19:51:40,421 - httpx - INFO - HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:51:50,941 - httpx - INFO - HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2025-04-28 19:51:58,417 - app.logger - INFO - Extracted tool status: False
+2025-04-28 19:51:58,417 - app.logger - INFO - Extracted tool content: SEPSIS
+2025-04-28 19:51:58,418 - app.logger - INFO - Starting tool request processing: SEPSIS
+2025-04-28 19:51:58,419 - app.logger - ERROR - Unable to import Manus: No module named 'fitz'
+2025-04-28 19:51:59,252 - httpx - INFO - HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
