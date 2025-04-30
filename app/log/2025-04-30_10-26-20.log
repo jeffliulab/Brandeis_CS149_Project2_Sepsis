@@ -1,0 +1,6 @@
+2025-04-30 10:26:20,476 - app.logger - INFO - Application started, logs saved to: /home/jeffliu/projects_ubuntu/CS149_Project2_Final/app/log/2025-04-30_10-26-20.log
+2025-04-30 10:26:21,227 - root - INFO - Anonymized telemetry enabled. See https://docs.browser-use.com/development/telemetry for more information.
+2025-04-30 10:26:21,925 - httpx - INFO - HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-04-30 10:26:21,936 - httpx - INFO - HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-04-30 10:26:27,670 - openai._base_client - INFO - Retrying request to /chat/completions in 0.376655 seconds
+2025-04-30 10:26:28,063 - openai._base_client - INFO - Retrying request to /chat/completions in 0.782886 seconds
