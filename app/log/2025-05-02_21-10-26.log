@@ -1,0 +1,11 @@
+2025-05-02 21:10:26,853 - app.logger - INFO - Application started, logs saved to: /home/jeffliu/projects_ubuntu/CS149_Project2_Final/app/log/2025-05-02_21-10-26.log
+2025-05-02 21:10:27,546 - root - INFO - Anonymized telemetry enabled. See https://docs.browser-use.com/development/telemetry for more information.
+2025-05-02 21:10:28,176 - httpx - INFO - HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-05-02 21:10:28,186 - httpx - INFO - HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-05-02 21:10:28,334 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-05-02 21:15:05,650 - httpx - INFO - HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 21:17:02,659 - httpx - INFO - HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2025-05-02 21:17:09,603 - app.logger - INFO - Extracted tool status: False
+2025-05-02 21:17:09,604 - app.logger - INFO - Extracted tool content: SEPSIS
+2025-05-02 21:17:09,605 - app.logger - INFO - Starting tool request processing: SEPSIS
+2025-05-02 21:19:49,822 - httpx - INFO - HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
